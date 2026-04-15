@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文單字挑戰</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --primary: #a2d2ff;
+            --success: #4caf50;
+            --danger: #f44336;
+            --text: #333;
+        }
+        body { font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.6; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .question-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .word-head { font-size: 28px; font-weight: bold; color: #2d3436; margin-bottom: 15px; text-align: center; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        
+        button { 
+            padding: 12px 15px; border: 2px solid #e0e0e0; background: white; border-radius: 10px; 
+            font-size: 16px; cursor: pointer; transition: all 0.2s; text-align: left;
+        }
+        button:hover:not(:disabled) { border-color: var(--primary); background: #f0f7ff; }
+        
+        /* 狀態效果 */
+        .btn-correct { background-color: var(--success) !important; color: white; border-color: var(--success) !important; position: relative; }
+        .btn-correct::after { content: " ⭕"; position: absolute; right: 15px; }
+        .btn-wrong { background-color: var(--danger) !important; color: white; border-color: var(--danger) !important; position: relative; }
+        .btn-wrong::after { content: " ❌"; position: absolute; right: 15px; }
+        
+        .hidden { display: none; }
+        
+        /* 錯題筆記樣式 */
+        .review-item { padding: 15px; background: white; border-bottom: 1px solid #eee; font-size: 18px; }
+        .review-item b { color: #d63031; margin-right: 10px; }
+        
+        .btn-action { 
+            width: 100%; padding: 15px; background: var(--primary); border: none; 
+            border-radius: 10px; font-weight: bold; font-size: 18px; margin-top: 20px; cursor: pointer;
+        }
+        h2 { text-align: center; color: #636e72; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-page">
+        <h2 id="quiz-title">單字練習</h2>
+        <div id="question-container"></div>
+    </div>
+
+    <div id="review-page" class="hidden">
+        <h2>💡 錯題筆記 (請複習)</h2>
+        <div id="review-list" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"></div>
+        <button class="btn-action" onclick="startRetry()">複習好了，開始重測錯題</button>
+    </div>
+
+    <div id="done-page" class="hidden">
+        <div style="text-align: center; padding: 40px 20px;">
+            <h1 style="font-size: 60px;">🎊</h1>
+            <h2>太棒了！</h2>
+            <p>你已經完成所有題目且全部正確！</p>
+            <button class="btn-action" onclick="resetAll()">重新開始挑戰</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const rawData = [
+    {en: "anxious", cn: "(adj.) 焦慮的"}, {en: "broadcast", cn: "(v./n.) 廣播、散佈"}, {en: "clumsy", cn: "(adj.) 笨拙的"},
+    {en: "damage", cn: "(v./n.) 損害"}, {en: "eager", cn: "(adj.) 渴望的"}, {en: "fancy", cn: "(adj./v./n.) 華麗的/想像/幻想"},
+    {en: "genuine", cn: "(adj.) 真誠的"}, {en: "hesitate", cn: "(v.) 猶豫"}, {en: "ignore", cn: "(v.) 忽略"},
+    {en: "jealous", cn: "(adj.) 嫉妒的"}, {en: "knot", cn: "(n.) (心裡的) 結、結"}, {en: "liberty", cn: "(n.) 自由"},
+    {en: "miserable", cn: "(adj.) 悲慘的"}, {en: "nickname", cn: "(n.) 綽號"}, {en: "obstacle", cn: "(n.) 障礙"},
+    {en: "panic", cn: "(v./n.) 恐慌"}, {en: "quarrel", cn: "(v./n.) 爭吵"}, {en: "rarely", cn: "(adv.) 很少"},
+    {en: "severe", cn: "(adj.) 嚴重的"}, {en: "threaten", cn: "(v.) 威脅"}, {en: "urge", cn: "(v./n.) 衝動/力勸"},
+    {en: "vivid", cn: "(adj.) 生動的"}, {en: "withdraw", cn: "(v.) 退出、撤回"}, {en: "yawn", cn: "(v.) 打噴嚏"},
+    {en: "zone", cn: "(n.) 區域、地帶"}, {en: "barely", cn: "(adv.) 幾乎不"}, {en: "candidate", cn: "(n.) 候選人"},
+    {en: "discipline", cn: "(n./v.) 紀律/懲戒"}, {en: "explore", cn: "(v.) 探索"}, {en: "frustrate", cn: "(v.) 使挫折"},
+    {en: "glance", cn: "(v./n.) 瞥見"}, {en: "horror", cn: "(n.) 恐懼"}, {en: "inferior", cn: "(adj.) 較差的、自卑的"},
+    {en: "luxury", cn: "(n.) 奢侈(品)"}, {en: "motivate", cn: "(v.) 激勵"}, {en: "numerous", cn: "(adj.) 許多的"},
+    {en: "persuade", cn: "(v.) 說服"}, {en: "rough", cn: "(adj.) 粗糙的、艱難的"}, {en: "shame", cn: "(n.) 羞恥"},
+    {en: "tough", cn: "(adj.) 強韌的、艱難的"}
+];
+
+let currentList = [];
+let answers = {}; // 紀錄：題號 -> 選項
+
+function init() {
+    const stage = localStorage.getItem('stage') || 'quiz';
+    const savedList = localStorage.getItem('currentList');
+    
+    currentList = savedList ? JSON.parse(savedList) : generateOptions(rawData);
+    answers = JSON.parse(localStorage.getItem('answers') || "{}");
+
+    if (stage === 'done') {
+        showPage('done-page');
+    } else if (stage === 'review') {
+        showReview();
+    } else {
+        renderQuiz();
+    }
+}
+
+// 產生含干擾項的題目
+function generateOptions(list) {
+    return list.map(item => {
+        let opts = [item.cn];
+        while(opts.length < 4) {
+            let randomCn = rawData[Math.floor(Math.random() * rawData.length)].cn;
+            if(!opts.includes(randomCn)) opts.push(randomCn);
+        }
+        return { ...item, options: opts.sort(() => Math.random() - 0.5) };
+    });
+}
+
+function renderQuiz() {
+    showPage('quiz-page');
+    const container = document.getElementById('question-container');
+    container.innerHTML = '';
+    
+    currentList.forEach((q, idx) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `card-${idx}`;
+        
+        let btns = q.options.map(opt => {
+            let stateClass = "";
+            let isDone = answers[idx] !== undefined;
+            if (isDone) {
+                if (opt === q.cn) stateClass = "btn-correct";
+                else if (opt === answers[idx]) stateClass = "btn-wrong";
+            }
+            return `<button onclick="pick(${idx}, '${opt}')" ${isDone?'disabled':''} class="${stateClass}">${opt}</button>`;
+        }).join('');
+
+        card.innerHTML = `<div class="word-head">${idx + 1}. ${q.en}</div><div class="options">${btns}</div>`;
+        container.appendChild(card);
+    });
+
+    // 捲動到上次的位置
+    const answeredCount = Object.keys(answers).length;
+    if (answeredCount > 0 && answeredCount < currentList.length) {
+        document.getElementById(`card-${answeredCount}`).scrollIntoView({behavior: "smooth", block: "center"});
+    }
+}
+
+function pick(idx, val) {
+    answers[idx] = val;
+    localStorage.setItem('answers', JSON.stringify(answers));
+    renderQuiz();
+    
+    if (Object.keys(answers).length === currentList.length) {
+        setTimeout(checkFinish, 800);
+    }
+}
+
+function checkFinish() {
+    const mistakes = currentList.filter((q, idx) => answers[idx] !== q.cn);
+    if (mistakes.length === 0) {
+        localStorage.setItem('stage', 'done');
+        showPage('done-page');
+    } else {
+        localStorage.setItem('mistakes', JSON.stringify(mistakes));
+        localStorage.setItem('stage', 'review');
+        showReview();
+    }
+}
+
+function showReview() {
+    showPage('review-page');
+    const mistakes = JSON.parse(localStorage.getItem('mistakes'));
+    const listDiv = document.getElementById('review-list');
+    listDiv.innerHTML = mistakes.map(m => `<div class="review-item"><b>${m.en}</b> ${m.cn}</div>`).join('');
+}
+
+function startRetry() {
+    const mistakes = JSON.parse(localStorage.getItem('mistakes'));
+    currentList = generateOptions(mistakes);
+    answers = {};
+    localStorage.setItem('currentList', JSON.stringify(currentList));
+    localStorage.setItem('answers', '{}');
+    localStorage.setItem('stage', 'quiz');
+    renderQuiz();
+}
+
+function showPage(id) {
+    ['quiz-page', 'review-page', 'done-page'].forEach(p => document.getElementById(p).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    window.scrollTo(0,0);
+}
+
+function resetAll() {
+    localStorage.clear();
+    location.reload();
+}
+
+init();
+</script>
+</body>
+</html>
