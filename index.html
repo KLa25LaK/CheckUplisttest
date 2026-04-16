@@ -3,137 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B3-2nd-11504-2-1 教學版</title>
+    <title>B2L5考卷單字複習</title>
     <style>
         :root { --bg: #f2f4f7; --primary: #4a90e2; --success: #52c41a; --danger: #ff4d4f; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; text-align: center; }
         .container { max-width: 500px; margin: 0 auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        .stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 12px; font-size: 14px; font-weight: bold; }
-        .stat-correct { color: var(--success); }
-        .stat-wrong { color: var(--danger); }
-        .stat-remain { color: #666; }
+        /* 封面樣式 */
+        #cover-page { padding: 30px 10px; }
+        .main-title { font-size: 38px; font-weight: bold; color: #1a1a1a; margin-bottom: 10px; }
+        .sub-title { font-size: 24px; color: #666; margin-bottom: 25px; font-weight: bold; }
+        .honor-text { font-size: 19px; color: #d48806; background: #fff7e6; padding: 20px; border-radius: 15px; line-height: 1.8; margin-bottom: 30px; border: 1.5px solid #ffe58f; }
 
-        .word-text { font-size: 42px; font-weight: bold; margin: 15px 0; color: #1a1a1a; }
-        .kk-text { color: #8c8c8c; font-size: 19px; margin-bottom: 25px; font-family: Arial; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        button { padding: 15px 10px; border-radius: 12px; border: 1.5px solid #eee; cursor: pointer; font-size: 16px; background: white; font-weight: bold; transition: 0.2s; }
+        /* 遊戲統計列 */
+        .stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 15px; font-size: 17px; font-weight: bold; }
+        .word-text { font-size: 52px; font-weight: bold; margin: 20px 0; color: #1a1a1a; }
+        .kk-text { color: #8c8c8c; font-size: 22px; margin-bottom: 30px; min-height: 1.2em; }
+
+        /* 2x2 選項網格與邊框 */
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .btn-option { height: 95px; font-size: 21px; font-weight: bold; background: white; border: 2.5px solid #eee; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; }
+
+        /* 導引按鈕 (兩行字) */
+        .btn-flex { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 125px; width: 100%; border-radius: 18px; cursor: pointer; border: 2.5px solid #eee; }
+        .main-text { font-size: 26px; font-weight: bold; margin-bottom: 8px; }
+        .sub-text { font-size: 16px; opacity: 0.9; }
         .btn-main { background: #e6f7ff; color: #1890ff; border-color: #91d5ff; }
         .btn-unsure { background: #fff1f0; color: #f5222d; border-color: #ffa39e; }
-        .btn-option { height: 75px; line-height: 1.3; border: 2px solid #f0f0f0; }
-        .feedback { font-size: 19px; padding: 18px; border-radius: 12px; margin-top: 15px; font-weight: bold; }
         
-        /* 筆記卡片：縮小間距版本 */
-        .review-card { text-align: left; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border: none; margin-bottom: 2px; }
-        .review-card b { font-size: 26px; color: #1a1a1a; }
-        .review-card small { font-size: 15px; color: #888; margin-left: 5px; }
-        .review-card .cn-text { font-size: 18px; color: var(--danger); font-weight: bold; margin-top: 2px; display: block; }
+        /* 底部功能鍵加大 */
+        .bottom-btn-group { margin-top: 40px; border-top: 1.5px solid #eee; padding-top: 25px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .bottom-btn { padding: 18px 5px; font-size: 19px; font-weight: bold; border-radius: 12px; border: 2px solid #ddd; background: #fafafa; cursor: pointer; }
+
+        .hidden { display: none !important; }
+        .speaker { background: none; border: none; font-size: 55px; color: var(--primary); cursor: pointer; }
+        .nav-btn { width: 100%; padding: 22px; border: none; border-radius: 18px; font-size: 24px; font-weight: bold; margin-top: 15px; color: white; cursor: pointer; }
         
-        .hidden { display: none; }
-        .speaker { background: none; border: none; font-size: 32px; color: var(--primary); cursor: pointer; }
-        .nav-btn { width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; margin-top: 10px; color: white; }
-        .copy-btn { background: #333; color: white; padding: 8px 15px; border-radius: 8px; font-size: 14px; margin-bottom: 15px; width: auto; display: inline-block; }
+        /* 筆記頁面單字 */
+        .review-card { text-align: left; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #eee; }
+        .review-card b { font-size: 32px; }
+        
+        /* 教師審核表 */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        #log-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1000; }
+        .log-content { width: 90%; max-width: 480px; height: 80%; background: white; margin: 30px auto; border-radius: 20px; padding: 20px; text-align: left; overflow-y: auto; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="quiz-page">
-        <div style="font-size: 13px; color: #999; margin-bottom: 10px;">單元：B3-2nd-11504-2-1</div>
+    <div id="cover-page">
+        <div class="main-title">B2L5考卷單字複習</div>
+        <div class="sub-title">全 40 題</div>
+        <div class="honor-text">
+            🏆 目前已有 <span id="honor-count" style="font-size: 26px; font-weight: 900; color: #e67e22;">0</span> 位同學<br>達成「一次全部答對」目標！
+        </div>
+        <div id="start-options"></div>
+        <button onclick="importCode()" class="nav-btn" style="background:#555; margin-top: 20px; font-size: 18px; height: 70px;">📥 匯入上次進度碼</button>
+    </div>
+
+    <div id="quiz-page" class="hidden">
         <div class="stats-bar">
-            <div class="stat-item stat-correct">✅ 正確: <span id="stat-c">0</span></div>
-            <div class="stat-item stat-wrong">❌ 難詞: <span id="stat-w">0</span></div>
-            <div class="stat-item stat-remain">⏳ 剩餘: <span id="stat-r">0</span></div>
+            <div style="color: var(--success);">✅ 正確: <span id="stat-c">0</span></div>
+            <div style="color: var(--danger);">❌ 難詞: <span id="stat-w">0</span></div>
+            <div style="color: #666;">⏳ 剩餘: <span id="stat-r">0</span></div>
         </div>
         <div id="content-area"></div>
-        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
-            <button onclick="exportCode()" style="font-size: 11px;">📋 複製進度</button>
-            <button onclick="importCode()" style="font-size: 11px;">📥 匯入進度</button>
-            <button onclick="resetAll(true)" style="font-size: 11px; color: #999;">❌ 清除重來</button>
+        <div class="bottom-btn-group">
+            <button class="bottom-btn" onclick="exportCode()">📋 複製</button>
+            <button class="bottom-btn" onclick="importCode()">📥 匯入</button>
+            <button class="bottom-btn" onclick="resetAllAction()" style="color: #888;">❌ 重來</button>
         </div>
     </div>
 
     <div id="review-page" class="hidden">
-        <h2 style="color: var(--danger); margin-bottom: 2px;">📖 難詞筆記</h2>
-        <p id="review-count" style="font-weight: bold; color: #666; margin-bottom: 10px; font-size: 14px;"></p>
-        
-        <button id="btn-copy-note" onclick="copyNoteToClipboard()" class="copy-btn">📋 一鍵複製筆記內容</button>
-        
-        <div id="review-list" style="margin-bottom: 15px; border-top: 1px solid #eee;"></div>
-        <div id="review-actions"></div>
+        <h2 style="color: var(--danger);">📖 難詞筆記</h2>
+        <div id="review-list" style="margin-bottom: 20px;"></div>
+        <button onclick="practiceMistakes()" class="nav-btn" style="background:var(--primary)">🔥 針對錯題再練一次</button>
+        <button onclick="resetAllAction()" class="nav-btn" style="background:#8c8c8c">全部重新洗牌</button>
+        <button onclick="showLogs()" style="margin-top:25px; color:#999; border:none; background:none; text-decoration:underline; font-size:15px; cursor:pointer;">📜 查看詳細學習進度軌跡</button>
+    </div>
+
+    <div id="done-page" class="hidden">
+        <h1 style="font-size:80px;">🏆</h1>
+        <h2 style="font-size:32px; margin-bottom: 30px;">恭喜！全數精熟！</h2>
+        <button onclick="showLogs()" class="nav-btn" style="background:#444">查看老師審核報告</button>
+        <button onclick="resetAllAction()" class="nav-btn" style="background:var(--primary)">下一輪挑戰</button>
+    </div>
+</div>
+
+<div id="log-modal">
+    <div class="log-content">
+        <h3>📊 教師審核報告</h3>
+        <div id="summary-table-area"></div>
+        <hr>
+        <button onclick="copyLogs()" style="background:#333; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;">複製整份日誌內容</button>
+        <button onclick="document.getElementById('log-modal').style.display='none'" style="float:right; font-size:24px; border:none; background:none;">✕</button>
+        <div id="log-list" style="white-space: pre-wrap; font-family: monospace; font-size: 11px; margin-top:15px; color:#666;"></div>
     </div>
 </div>
 
 <script>
+// --- 老師手動設定區 ---
+const teachersHonorCount = 0; // 老師請在此手動更新人數
+// --------------------
+
 const vocabData = [
-    {en: "concentration", pos: "(n.)", kk: "/ˌkɑːnsnˈtreɪʃn/", cn: "專注；集中；濃度"},
-    {en: "dominate", pos: "(v.)", kk: "/ˈdɑːmɪneɪt/", cn: "支配；主導"},
-    {en: "ethical", pos: "(adj.)", kk: "/ˈeθɪkl/", cn: "倫理的；道德的"},
-    {en: "evaluate", pos: "(v.)", kk: "/ɪˈvæljueɪt/", cn: "評估；評價"},
-    {en: "complex", pos: "(adj.)", kk: "/kəmˈpleks/", cn: "複雜的"},
-    {en: "nervously", pos: "(adv.)", kk: "/ˈnɜːrvəsli/", cn: "緊張地"},
-    {en: "gesture", pos: "(v./n.)", kk: "/ˈdʒestʃər/", cn: "做手勢；姿勢"},
-    {en: "wage", pos: "(n.)", kk: "/weɪdʒ/", cn: "工資"},
-    {en: "cast", pos: "(v.)", kk: "/kæst/", cn: "投；擲；拋"},
-    {en: "aggressive", pos: "(adj.)", kk: "/əˈɡresɪv/", cn: "具侵略性的；積極進取的"}
+    {en: "Bead", pos: "(n.)", cn: "珠子"},
+    {en: "Beam", pos: "(n.)", cn: "光線、橫樑"},
+    {en: "Bean", pos: "(n.)", cn: "豆子"},
+    {en: "Beard", pos: "(n.)", cn: "鬍鬚"},
+    {en: "Beer", pos: "(n.)", cn: "啤酒"},
+    {en: "Beetle", pos: "(n.)", cn: "甲蟲"},
+    {en: "Beg", pos: "(v.)", cn: "乞求、請求"},
+    {en: "Beginner", pos: "(n.)", cn: "初學者"},
+    {en: "Behave", pos: "(v.)", cn: "表現、舉止"},
+    {en: "Being", pos: "(n.)", cn: "生物、存在"},
+    {en: "Belief", pos: "(n.)", cn: "信念、相信"},
+    {en: "Below", pos: "(prep./adv.)", cn: "在...之下"},
+    {en: "Bend", pos: "(v./n.)", cn: "彎曲"},
+    {en: "Besides", pos: "(prep./adv.)", cn: "此外、除了...之外"},
+    {en: "Bet", pos: "(v./n.)", cn: "打賭、肯定"},
+    {en: "Beyond", pos: "(prep./adv.)", cn: "超越、在...那邊"},
+    {en: "Bill", pos: "(n.)", cn: "帳單、鈔票"},
+    {en: "Bind", pos: "(v.)", cn: "綑綁、聯繫"},
+    {en: "Bitter", pos: "(adj.)", cn: "苦的、痛苦的"},
+    {en: "Blackboard", pos: "(n.)", cn: "黑板"},
+    {en: "Blank", pos: "(adj./n.)", cn: "空白的"},
+    {en: "Blind", pos: "(adj.)", cn: "盲的"},
+    {en: "Block", pos: "(n./v.)", cn: "街區、阻擋"},
+    {en: "Bloom", pos: "(n./v.)", cn: "開花"},
+    {en: "Board", pos: "(n./v.)", cn: "板、董事會、登（機/船）"},
+    {en: "Boil", pos: "(v.)", cn: "沸騰、煮沸"},
+    {en: "Bomb", pos: "(n./v.)", cn: "炸彈"},
+    {en: "Concentration", pos: "(n.)", cn: "專注、集中"},
+    {en: "Dominate", pos: "(v.)", cn: "支配、主導"},
+    {en: "Evaluate", pos: "(v.)", cn: "評估、評價"},
+    {en: "Complex", pos: "(adj.)", cn: "複雜的"},
+    {en: "Nervously", pos: "(adv.)", cn: "緊張地"},
+    {en: "Gesture", pos: "(n./v.)", cn: "手勢、姿勢"},
+    {en: "Wage", pos: "(n.)", cn: "工資、薪水"},
+    {en: "Cast", pos: "(v./n.)", cn: "投擲、卡司（演員陣容）"},
+    {en: "Aggressive", pos: "(adj.)", cn: "具侵略性的、積極進取的"},
+    {en: "Anxious", pos: "(adj.)", cn: "焦慮的"},
+    {en: "Broadcast", pos: "(v./n.)", cn: "廣播、播送"},
+    {en: "Clumsy", pos: "(adj.)", cn: "笨拙的"},
+    {en: "Damage", pos: "(v./n.)", cn: "損害、傷害"}
 ];
 
-const externalPosPool = {
-    "(n.)": ["結構", "資源", "背景", "目標", "價值", "標準", "限制", "地位", "因素", "內容"],
-    "(v.)": ["改善", "維持", "解決", "調整", "發展", "減少", "增加", "觀察", "證明", "反映"],
-    "(adj.)": ["明顯的", "適當的", "傳統的", "合理的", "暫時的", "效率的", "獨特的", "負面的"],
-    "(adv.)": ["顯然地", "適當地", "穩定地", "部分地", "強烈地", "相當地", "幾乎地"],
-    "(v./n.)": ["挑戰", "回應", "計畫", "爭論", "支持", "研究", "保護", "傷害"]
-};
+const externalPosPool = {"(n.)":["結構","資源","背景","目標"], "(v.)":["改善","維持","解決","發展"], "(adj.)":["明顯","適當","傳統","合理"], "(adv.)":["顯然","穩定","相當","幾乎"], "(v./n.)":["挑戰","計畫","調整","保護"]};
 
-let quizList = [];
-let answers = {};
-let mistakes = [];
-let currentIdx = 0;
-let correctCount = 0;
+let activityLogs = [], summaryStats = [], quizList = [], answers = {}, mistakes = [], currentIdx = 0, currentEntry = null;
 
 window.onload = function() {
-    const savedAns = localStorage.getItem('vFinal_ans');
-    const savedList = localStorage.getItem('vFinal_list');
-    if (savedAns && savedList) {
-        if (confirm("發現上次紀錄，是否繼續？")) {
-            quizList = JSON.parse(savedList);
-            answers = JSON.parse(savedAns);
-            mistakes = JSON.parse(localStorage.getItem('vFinal_mistakes') || "[]");
-            currentIdx = Object.keys(answers).length;
-            correctCount = 0;
-            Object.keys(answers).forEach((key) => {
-                if (answers[key] === `${quizList[key].pos} ${quizList[key].cn}`) correctCount++;
-            });
-            render();
-            return;
-        }
-    }
-    resetAll(false);
+    document.getElementById('honor-count').innerText = teachersHonorCount;
+    initCover();
 };
 
+function initCover() {
+    const savedAns = localStorage.getItem('vTrack_ans');
+    const startDiv = document.getElementById('start-options');
+    if (savedAns && Object.keys(JSON.parse(savedAns)).length > 0) {
+        const lastIdx = Object.keys(JSON.parse(savedAns)).length;
+        startDiv.innerHTML = `
+            <button onclick="confirmContinue(${lastIdx})" class="nav-btn" style="background:var(--success); height: 90px;">從上次進度開始</button>
+            <button onclick="confirmRestart(${lastIdx})" class="nav-btn" style="background:var(--danger); margin-top: 15px; font-size: 18px; height: 70px;">重新開始練習</button>
+        `;
+    } else {
+        startDiv.innerHTML = `<button onclick="startGame()" class="nav-btn" style="background:var(--primary); height: 90px;">進入單字測驗</button>`;
+    }
+}
+
+function confirmContinue(lastIdx) {
+    if (confirm(`上次進度已完成 ${lastIdx} 題，確定要繼續嗎？`)) { loadData(); startGameSession(); }
+}
+
+function confirmRestart(lastIdx) {
+    if (confirm(`上次進度到第 ${lastIdx} 題，確定要重新開始嗎？`)) { localStorage.clear(); startGame(); }
+}
+
+function startGame() {
+    quizList = [...vocabData].sort(() => Math.random() - 0.5);
+    answers = {}; mistakes = []; currentIdx = 0; activityLogs = []; summaryStats = [];
+    addLog("--- 測驗開始 ---"); startStatsEntry("正式測驗");
+    startGameSession();
+}
+
+function startGameSession() {
+    document.getElementById('cover-page').classList.add('hidden');
+    render();
+}
+
+function loadData() {
+    quizList = JSON.parse(localStorage.getItem('vTrack_list'));
+    answers = JSON.parse(localStorage.getItem('vTrack_ans'));
+    mistakes = JSON.parse(localStorage.getItem('vTrack_mistakes') || "[]");
+    activityLogs = JSON.parse(localStorage.getItem('vTrack_logs') || "[]");
+    summaryStats = JSON.parse(localStorage.getItem('vTrack_stats') || "[]");
+    currentIdx = Object.keys(answers).length;
+    startStatsEntry("延續測驗");
+}
+
 function render() {
+    const area = document.getElementById('content-area');
     document.getElementById('quiz-page').classList.remove('hidden');
     document.getElementById('review-page').classList.add('hidden');
-    const area = document.getElementById('content-area');
-    document.getElementById('stat-c').innerText = correctCount;
+    if (currentIdx >= quizList.length) { endStatsEntry(); showReview(); return; }
+
+    document.getElementById('stat-c').innerText = Object.values(answers).filter(v => v !== 'UNSURE' && v.includes(' ')).length;
     document.getElementById('stat-w').innerText = mistakes.length;
     document.getElementById('stat-r').innerText = quizList.length - currentIdx;
-
-    if (currentIdx >= quizList.length) {
-        showReview();
-        return;
-    }
 
     const q = quizList[currentIdx];
     area.innerHTML = `
         <button onclick="speak('${q.en}')" class="speaker">🔊</button>
         <div class="word-text">${q.en}</div>
-        <div class="kk-text">${q.kk}</div>
-        <div id="action-zone">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <button class="btn-main" onclick="showOptions()">🔍 我要作答</button>
-                <button class="btn-unsure" onclick="handleUnsure()">❓ 我不確定</button>
+        <div class="kk-text"></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="btn-flex btn-main" onclick="showOptions()">
+                <span class="main-text">我要作答</span>
+                <span class="sub-text">請給答案選項</span>
+            </div>
+            <div class="btn-flex btn-unsure" onclick="handleUnsure()">
+                <span class="main-text">我不確定</span>
+                <span class="sub-text">請放入單字卡</span>
             </div>
         </div>
     `;
@@ -141,108 +235,79 @@ function render() {
 
 function showOptions() {
     const q = quizList[currentIdx];
-    const correctStr = `${q.pos} ${q.cn}`;
+    const correct = `${q.pos} ${q.cn}`;
     const pool = externalPosPool[q.pos] || ["(n.) 內容"];
     const randomFakes = [...pool].sort(() => Math.random() - 0.5).slice(0, 3).map(f => `${q.pos} ${f}`);
-    const finalOptions = [correctStr, ...randomFakes].sort(() => Math.random() - 0.5);
-
-    document.getElementById('action-zone').innerHTML = `
-        <div class="options-grid">
-            ${finalOptions.map(o => `<button class="btn-option" onclick="handlePick('${o}')">${o}</button>`).join('')}
-        </div>
+    const finalOptions = [correct, ...randomFakes].sort(() => Math.random() - 0.5);
+    document.getElementById('content-area').innerHTML = `
+        <button onclick="speak('${q.en}')" class="speaker">🔊</button>
+        <div class="word-text">${q.en}</div>
+        <div class="options-grid">${finalOptions.map(o => `<button class="btn-option" onclick="handlePick('${o}')">${o}</button>`).join('')}</div>
     `;
 }
 
 function handlePick(val) {
-    const q = quizList[currentIdx];
-    const correctStr = `${q.pos} ${q.cn}`;
+    const q = quizList[currentIdx], correct = `${q.pos} ${q.cn}`;
     answers[currentIdx] = val;
-    const isCorrect = val === correctStr;
-    if (isCorrect) correctCount++;
-    else if (!mistakes.find(m => m.en === q.en)) mistakes.push(q);
+    const isCorrect = (val === correct);
+    addLog(`答題: ${q.en} -> ${isCorrect?'正':'誤'}`);
+    if(!isCorrect) {
+        if(!mistakes.find(m => m.en === q.en)) mistakes.push(q);
+        if(currentEntry) currentEntry.mistakes++;
+    }
     showResult(q, isCorrect);
 }
 
 function handleUnsure() {
     const q = quizList[currentIdx];
     answers[currentIdx] = "UNSURE";
-    if (!mistakes.find(m => m.en === q.en)) mistakes.push(q);
+    addLog(`不確定: ${q.en}`);
+    if(!mistakes.find(m => m.en === q.en)) mistakes.push(q);
+    if(currentEntry) currentEntry.mistakes++;
     showResult(q, false, "已記在筆記");
 }
 
 function showResult(q, isCorrect, msg) {
     save();
-    document.getElementById('action-zone').innerHTML = `
+    document.getElementById('content-area').innerHTML = `
         <div class="feedback" style="background:${isCorrect?'#f6ffed':'#fff1f0'}; color:${isCorrect?'#389e0d':'#cf1322'}">
             ${msg || (isCorrect ? '答對了！' : '答錯囉')}<br>
             <small style="color:#555">正確解答：${q.pos} ${q.cn}</small>
         </div>
-        <button onclick="currentIdx++; render();" style="width:100%; margin-top:15px; background:#333; color:white; padding:18px; border-radius:12px; font-weight:bold;">下一題</button>
+        <button onclick="currentIdx++; render();" style="width:100%; margin-top:20px; background:#333; color:white; padding:25px; border-radius:18px; font-weight:bold; font-size:26px;">下一題</button>
     `;
-}
-
-function save() {
-    localStorage.setItem('vFinal_list', JSON.stringify(quizList));
-    localStorage.setItem('vFinal_ans', JSON.stringify(answers));
-    localStorage.setItem('vFinal_mistakes', JSON.stringify(mistakes));
 }
 
 function showReview() {
     document.getElementById('quiz-page').classList.add('hidden');
     document.getElementById('review-page').classList.remove('hidden');
-    const list = document.getElementById('review-list');
-    document.getElementById('review-count').innerText = `共 ${mistakes.length} 個難詞`;
-    
     if (mistakes.length === 0) {
-        list.innerHTML = "<p>恭喜！全對。</p>";
-        document.getElementById('btn-copy-note').classList.add('hidden');
-        document.getElementById('review-actions').innerHTML = `<button onclick="resetAll(false)" class="nav-btn" style="background:var(--success)">全部重新練習</button>`;
+        document.getElementById('review-page').classList.add('hidden');
+        document.getElementById('done-page').classList.remove('hidden');
     } else {
-        document.getElementById('btn-copy-note').classList.remove('hidden');
-        list.innerHTML = mistakes.map(m => `
-            <div class="review-card">
-                <div>
-                    <b>${m.en}</b> <small>${m.kk}</small>
-                    <span class="cn-text">${m.pos} ${m.cn}</span>
-                </div>
-                <button onclick="speak('${m.en}')" class="speaker" style="font-size: 28px;">🔊</button>
-            </div>`).join('');
-        document.getElementById('review-actions').innerHTML = `
-            <button onclick="practiceMistakes()" class="nav-btn" style="background:var(--primary)">🔥 針對這 ${mistakes.length} 個字再練一次</button>
-            <button onclick="resetAll(true)" class="nav-btn" style="background:#8c8c8c">全部重新練習</button>
-        `;
+        startStatsEntry("筆記複習");
+        document.getElementById('review-list').innerHTML = mistakes.map(m => `<div class="review-card"><div><b>${m.en}</b><br><span style="color:red; font-weight:bold; font-size:24px;">${m.pos} ${m.cn}</span></div><button onclick="speak('${m.en}')" class="speaker">🔊</button></div>`).join('');
+        document.getElementById('review-actions').innerHTML = `<button onclick="practiceMistakes()" class="nav-btn" style="background:var(--primary)">針對錯題再練一次</button>`;
     }
 }
 
-function copyNoteToClipboard() {
-    if (mistakes.length === 0) return;
-    const text = mistakes.map(m => `${m.en} ${m.kk} ${m.pos} ${m.cn}`).join('\n');
-    navigator.clipboard.writeText(text).then(() => {
-        alert("筆記內容已複製！");
-    });
-}
-
-function practiceMistakes() {
-    quizList = [...mistakes].sort(() => Math.random() - 0.5);
-    answers = {}; mistakes = []; currentIdx = 0; correctCount = 0;
-    save(); render();
-}
-
-function resetAll(confirmNeeded) {
-    if (confirmNeeded && !confirm("確定要重新洗牌開始嗎？")) return;
-    localStorage.clear();
-    quizList = [...vocabData].sort(() => Math.random() - 0.5);
-    answers = {}; mistakes = []; currentIdx = 0; correctCount = 0;
-    save(); render();
-}
-
+function practiceMistakes() { endStatsEntry(); startStatsEntry("錯題重練"); quizList = [...mistakes].sort(() => Math.random() - 0.5); answers = {}; mistakes = []; currentIdx = 0; save(); render(); }
+function resetAllAction() { if(confirm("確定重來？")) { localStorage.clear(); location.reload(); } }
+function save() { localStorage.setItem('vTrack_list', JSON.stringify(quizList)); localStorage.setItem('vTrack_ans', JSON.stringify(answers)); localStorage.setItem('vTrack_mistakes', JSON.stringify(mistakes)); localStorage.setItem('vTrack_logs', JSON.stringify(activityLogs)); localStorage.setItem('vTrack_stats', JSON.stringify(summaryStats)); }
 function speak(t) { const m = new SpeechSynthesisUtterance(t); m.lang = 'en-US'; window.speechSynthesis.speak(m); }
-function exportCode() { alert("進度碼已複製：" + btoa(unescape(encodeURIComponent(JSON.stringify({a:answers, l:quizList, m:mistakes}))))); }
-function importCode() {
-    const code = prompt("貼入代碼：");
-    if (code) { try { const d = JSON.parse(decodeURIComponent(escape(atob(code)))); quizList=d.l; answers=d.a; mistakes=d.m; save(); location.reload(); } catch(e) { alert("代碼錯誤"); } }
+function exportCode() { alert("進度碼已複製"); }
+function importCode() { const c = prompt("代碼"); if(c) { try { const d = JSON.parse(decodeURIComponent(escape(atob(c)))); localStorage.setItem('vTrack_list', JSON.stringify(d.l)); localStorage.setItem('vTrack_ans', JSON.stringify(d.a)); localStorage.setItem('vTrack_mistakes', JSON.stringify(d.m)); location.reload(); } catch(e){} } }
+function showLogs() {
+    let html = `<table><tr><th>階段</th><th>錯題</th><th>用時</th></tr>`;
+    summaryStats.forEach(s => html += `<tr><td>${s.type}</td><td>${s.mistakes}</td><td>${Math.round((s.end-s.start)/1000)}秒</td></tr>`);
+    document.getElementById('summary-table-area').innerHTML = html + `</table>`;
+    document.getElementById('log-list').innerText = activityLogs.join('\n');
+    document.getElementById('log-modal').style.display = 'block';
 }
+function copyLogs() { navigator.clipboard.writeText(document.getElementById('log-list').innerText); alert("複製成功"); }
+function addLog(msg) { const t = new Date(); activityLogs.push(`[${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}] ${msg}`); }
+function startStatsEntry(type) { currentEntry = { type, start: new Date().getTime(), mistakes: 0 }; }
+function endStatsEntry() { if(currentEntry) { currentEntry.end = new Date().getTime(); summaryStats.push(currentEntry); currentEntry = null; save(); } }
 </script>
-
 </body>
 </html>
