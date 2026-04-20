@@ -2,233 +2,229 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B2L5考卷單字複習</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>B2L5 考卷單字複習</title>
     <style>
-        :root { --bg: #f2f4f7; --primary: #4a90e2; --success: #52c41a; --danger: #ff4d4f; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; text-align: center; }
-        .container { max-width: 480px; margin: 0 auto; background: white; padding: 15px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1.5px solid #ddd; }
+        :root { 
+            --bg: #f2f4f7; --card-bg: #ffffff; 
+            --primary: #4a90e2; --primary-light: #e6f7ff;
+            --success: #52c41a; --success-light: #f6ffed;
+            --danger: #ff4d4f; --danger-light: #fff1f0;
+            --text-main: #1a1a1a; --text-sub: #8c8c8c;
+            --border: #e8e8e8;
+        }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .app-container { 
+            width: 100%; max-width: 380px; background: var(--card-bg); 
+            border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); 
+            border: 1px solid var(--border); overflow: hidden;
+            display: flex; flex-direction: column; height: 94vh; max-height: 720px;
+        }
+        .status-bar { display: flex; justify-content: space-around; padding: 10px; background: #fafafa; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: bold; }
+        .quiz-header { flex: 0 0 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 5px; }
+        .word-text { font-size: 38px; font-weight: 800; color: var(--text-main); margin: 0; }
+        .kk-text { color: var(--text-sub); font-size: 17px; margin-top: 2px; font-family: serif; min-height: 1.2em; }
+        .options-container { flex: 0 0 190px; padding: 0 15px; display: flex; align-items: center; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+        .btn-option { 
+            height: 85px; font-size: 17px; font-weight: 600; background: white; 
+            border: 2px solid #f0f0f0; border-radius: 15px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; padding: 5px; line-height: 1.2;
+        }
+        .btn-option.correct { background: var(--success-light) !important; border-color: var(--success) !important; color: #389e0d !important; }
+        .btn-option.wrong { background: var(--danger-light) !important; border-color: var(--danger) !important; color: #cf1322 !important; }
+        .action-container { flex: 0 0 130px; padding: 0 15px; display: flex; flex-direction: column; justify-content: center; }
+        .btn-action-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-flex { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px; border-radius: 18px; cursor: pointer; border: 2px solid #f0f0f0; }
+        .btn-flex.blue { background: var(--primary-light); color: var(--primary); border-color: #bae7ff; }
+        .btn-flex.red { background: var(--danger-light); color: var(--danger); border-color: #ffa39e; }
+        .btn-flex b { font-size: 22px; margin-bottom: 2px; }
+        .btn-flex span { font-size: 13px; opacity: 0.8; }
+        .result-hint { font-size: 24px; font-weight: 900; margin-bottom: 8px; text-align: center; }
+        .btn-next { width: 100%; height: 75px; background: #262626; color: white; border: none; border-radius: 15px; font-size: 22px; font-weight: bold; cursor: pointer; }
         
-        #cover-page { padding: 20px 5px; }
-        .main-title { font-size: 34px; font-weight: bold; color: #1a1a1a; margin-bottom: 8px; }
-        .sub-title { font-size: 22px; color: #666; margin-bottom: 20px; font-weight: bold; }
-        .honor-text { font-size: 18px; color: #d48806; background: #fff7e6; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #ffe58f; }
+        /* 筆記頁面修正：讓清單可滾動，按鈕固定 */
+        #review-page { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        .review-header { flex: 0 0 auto; padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .review-list { flex: 1 1 auto; padding: 10px; overflow-y: auto; text-align: left; -webkit-overflow-scrolling: touch; }
+        .review-footer { flex: 0 0 auto; padding: 12px; background: white; border-top: 1px solid #eee; }
 
-        .stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 12px; background: #f8f9fa; padding: 12px; border-radius: 12px; font-size: 16px; font-weight: bold; }
-        .word-text { font-size: 50px; font-weight: bold; margin: 15px 0; color: #1a1a1a; }
-
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .btn-option { height: 90px; font-size: 21px; font-weight: bold; background: white; border: 2.5px solid #eee; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; }
-
-        .btn-flex { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 120px; width: 100%; border-radius: 18px; cursor: pointer; border: 2.5px solid #eee; }
-        .main-text { font-size: 26px; font-weight: bold; margin-bottom: 5px; }
-        .sub-text { font-size: 16px; opacity: 0.9; }
-        .btn-main { background: #e6f7ff; color: #1890ff; border-color: #91d5ff; }
-        .btn-unsure { background: #fff1f0; color: #f5222d; border-color: #ffa39e; }
-        
-        .feedback { font-size: 28px; padding: 25px 15px; border-radius: 15px; margin-top: 15px; font-weight: bold; line-height: 1.4; }
-        .feedback small { font-size: 24px; color: #333; display: block; margin-top: 10px; font-weight: bold; }
-
-        .bottom-btn-group { margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .bottom-btn { padding: 15px 5px; font-size: 18px; font-weight: bold; border-radius: 10px; border: 1.5px solid #ddd; background: #fafafa; cursor: pointer; }
-
-        .hidden { display: none !important; }
-        .speaker { background: none; border: none; font-size: 55px; color: var(--primary); cursor: pointer; margin-bottom: 10px; }
-        .nav-btn { width: 100%; padding: 20px; border: none; border-radius: 18px; font-size: 24px; font-weight: bold; margin-top: 12px; color: white; cursor: pointer; }
-        
-        .review-card { text-align: left; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .review-card b { font-size: 30px; }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 15px 0; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        #log-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1000; }
-        .log-content { width: 90%; max-width: 480px; height: 80%; background: white; margin: 30px auto; border-radius: 20px; padding: 20px; text-align: left; overflow-y: auto; }
+        .review-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 5px; border-bottom: 1px solid #f5f5f5; }
+        .item-left { display: flex; align-items: baseline; gap: 6px; }
+        .item-left b { font-size: 19px; color: var(--text-main); }
+        .item-left .pos { font-size: 12px; color: var(--text-sub); }
+        .item-left .cn { font-size: 15px; color: var(--danger); font-weight: bold; }
+        .none { display: none !important; }
+        .invisible { visibility: hidden; }
+        .speaker-main { background: none; border: none; font-size: 40px; cursor: pointer; color: var(--primary); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="cover-page">
-        <div class="main-title">B2L5考卷單字複習</div>
-        <div class="sub-title">全 40 題</div>
-        <div class="honor-text">🏆 目前已有 <span id="honor-count" style="font-size: 22px;">0</span> 位同學<br>達成「一次全部答對」目標！</div>
-        <div id="start-options"></div>
-        <button onclick="importCode()" class="nav-btn" style="background:#555; margin-top: 15px; font-size: 18px; height: 60px;">📥 匯入進度碼</button>
+<div class="app-container">
+    <div id="cover-page" style="padding: 30px 20px; text-align: center;">
+        <h2 style="font-size: 30px; margin: 0;">B2L5</h2>
+        <p style="color: var(--text-sub); font-size: 18px; margin: 5px 0 20px;">考卷單字複習</p>
+        <div id="entry-buttons"></div>
+        <button onclick="importCode()" style="margin-top: 15px; background: none; border: 1px solid #ccc; padding: 10px; border-radius: 10px; width: 100%; font-size: 15px; color: #666;">📥 匯入進度碼</button>
     </div>
 
-    <div id="quiz-page" class="hidden">
-        <div class="stats-bar">
-            <div style="color: var(--success);">✅ 正確: <span id="stat-c">0</span></div>
-            <div style="color: var(--danger);">❌ 難詞: <span id="stat-w">0</span></div>
-            <div style="color: #666;">⏳ 剩餘: <span id="stat-r">0</span></div>
+    <div id="quiz-page" class="none" style="flex:1; display:flex; flex-direction:column;">
+        <div class="status-bar">
+            <span style="color:var(--success)">✅ <span id="stat-c">0</span></span>
+            <span style="color:var(--danger)">❌ <span id="stat-w">0</span></span>
+            <span style="color:var(--text-sub)">⏳ <span id="stat-r">0</span></span>
         </div>
-        <div id="content-area"></div>
-        <div class="bottom-btn-group">
-            <button class="bottom-btn" onclick="exportCode()">📋 複製</button>
-            <button class="bottom-btn" onclick="importCode()">📥 匯入</button>
-            <button class="bottom-btn" onclick="resetAllAction()" style="color: #888;">❌ 重來</button>
+        <div class="quiz-header">
+            <button onclick="speakCurrent()" class="speaker-main">🔊</button>
+            <div id="word-display" class="word-text"></div>
+            <div id="kk-display" class="kk-text"></div>
+        </div>
+        <div class="options-container">
+            <div id="options-grid" class="options-grid invisible"></div>
+        </div>
+        <div class="action-container">
+            <div id="action-prompt" class="btn-action-group">
+                <div class="btn-flex blue" onclick="showOptions()"><b>我要作答</b><span>顯示選項</span></div>
+                <div class="btn-flex red" onclick="handleUnsure()"><b>我不確定</b><span>存入筆記</span></div>
+            </div>
+            <div id="action-next" class="none"><div id="result-hint" class="result-hint"></div><button onclick="nextQuestion()" class="btn-next">下一題</button></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; padding: 10px; border-top: 1px solid #eee;">
+            <button onclick="exportCode()" style="padding: 8px; font-size: 12px; border-radius: 8px; border: 1px solid #ddd; background: #fafafa;">📋 複製</button>
+            <button onclick="importCode()" style="padding: 8px; font-size: 12px; border-radius: 8px; border: 1px solid #ddd; background: #fafafa;">📥 匯入</button>
+            <button onclick="resetAll()" style="padding: 8px; font-size: 12px; border-radius: 8px; border: 1px solid #ddd; background: #fafafa; color: #999;">❌ 重來</button>
         </div>
     </div>
 
-    <div id="review-page" class="hidden">
-        <h2 style="color: var(--danger);">📖 難詞筆記</h2>
-        <div id="review-list"></div>
-        <button onclick="practiceMistakes()" class="nav-btn" style="background:var(--primary)">🔥 針對錯題再練一次</button>
-        <button onclick="resetAllAction()" class="nav-btn" style="background:#8c8c8c">全部重新洗牌</button>
-        <button onclick="showLogs()" style="margin-top:20px; color:#999; border:none; background:none; text-decoration:underline; font-size:15px; cursor:pointer;">📜 查看詳細學習進度軌跡</button>
-    </div>
-
-    <div id="done-page" class="hidden">
-        <h1 style="font-size:80px;">🏆</h1>
-        <h2 style="font-size:32px; margin-bottom: 30px;">恭喜！全數精熟！</h2>
-        <button onclick="showLogs()" class="nav-btn" style="background:#444">查看老師審核報告</button>
-        <button onclick="resetAllAction()" class="nav-btn" style="background:var(--primary)">下一輪挑戰</button>
+    <div id="review-page" class="none">
+        <div class="review-header">
+            <h3 style="margin: 0; color: var(--danger);">📖 難詞筆記</h3>
+            <button onclick="copyMistakesText()" style="background: #333; color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 12px;">複製文字</button>
+        </div>
+        <div id="review-list-container" class="review-list"></div>
+        <div class="review-footer">
+            <button onclick="practiceMistakes()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; margin-bottom: 8px;">針對錯題再練一次</button>
+            <button onclick="resetAll()" style="width: 100%; background: none; border: none; color: #999; text-decoration: underline; font-size: 13px;">全部洗牌重練</button>
+            <button onclick="showLogs()" style="width: 100%; margin-top: 10px; color: #aaa; font-size: 11px; text-decoration: underline; border:none; background:none;">📜 查看歷史歷程紀錄</button>
+        </div>
     </div>
 </div>
 
-<div id="log-modal">
-    <div class="log-content">
-        <h3>📊 教師審核報告</h3>
-        <div id="summary-table-area"></div>
-        <button onclick="copyLogs()" style="background:#333; color:white; padding:10px; border-radius:8px;">複製日誌</button>
-        <button onclick="document.getElementById('log-modal').style.display='none'" style="float:right;">✕</button>
-        <div id="log-list" style="white-space: pre-wrap; font-family: monospace; font-size: 11px; margin-top:10px;"></div>
+<div id="log-modal" onclick="this.style.display='none'" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 100;">
+    <div class="log-box" onclick="event.stopPropagation()" style="background:white; margin:10% auto; width:85%; padding:20px; border-radius:20px; max-height:70%; overflow-y:auto;">
+        <h3>📊 教師歷程紀錄</h3>
+        <div id="log-table-area" style="overflow-x:auto;"></div>
+        <button onclick="copyLogs()" style="width:100%; padding:10px; background:#333; color:white; border-radius:10px; margin-top:10px;">複製歷程報告</button>
     </div>
 </div>
 
 <script>
-const teachersHonorCount = 0; 
-
+// 單字資料庫 47 題
 const vocabData = [
-    {en: "Bead", pos: "(n.)", cn: "珠子"},
-    {en: "Beam", pos: "(n.)", cn: "光線、橫樑"},
-    {en: "Bean", pos: "(n.)", cn: "豆子"},
-    {en: "Beard", pos: "(n.)", cn: "鬍鬚"},
-    {en: "Beer", pos: "(n.)", cn: "啤酒"},
-    {en: "Beetle", pos: "(n.)", cn: "甲蟲"},
-    {en: "Beg", pos: "(v.)", cn: "乞求、請求"},
-    {en: "Beginner", pos: "(n.)", cn: "初學者"},
-    {en: "Behave", pos: "(v.)", cn: "表現、舉止"},
-    {en: "Being", pos: "(n.)", cn: "生物、存在"},
-    {en: "Belief", pos: "(n.)", cn: "信念、相信"},
-    {en: "Below", pos: "(prep./adv.)", cn: "在...之下"},
-    {en: "Bend", pos: "(v./n.)", cn: "彎曲"},
-    {en: "Besides", pos: "(prep./adv.)", cn: "此外、除了...之外"},
-    {en: "Bet", pos: "(v./n.)", cn: "打賭、肯定"},
-    {en: "Beyond", pos: "(prep./adv.)", cn: "超越、在...那邊"},
-    {en: "Bill", pos: "(n.)", cn: "帳單、鈔票"},
-    {en: "Bind", pos: "(v.)", cn: "綑綁、聯繫"},
-    {en: "Bitter", pos: "(adj.)", cn: "苦的、痛苦的"},
-    {en: "Blackboard", pos: "(n.)", cn: "黑板"},
-    {en: "Blank", pos: "(adj./n.)", cn: "空白的"},
-    {en: "Blind", pos: "(adj.)", cn: "盲的"},
-    {en: "Block", pos: "(n./v.)", cn: "街區、阻擋"},
-    {en: "Bloom", pos: "(n./v.)", cn: "開花"},
-    {en: "Board", pos: "(n./v.)", cn: "板、董事會、登（機/船）"},
-    {en: "Boil", pos: "(v.)", cn: "沸騰、煮沸"},
-    {en: "Bomb", pos: "(n./v.)", cn: "炸彈"},
-    {en: "Concentration", pos: "(n.)", cn: "專注、集中"},
-    {en: "Dominate", pos: "(v.)", cn: "支配、主導"},
-    {en: "Evaluate", pos: "(v.)", cn: "評估、評價"},
-    {en: "Complex", pos: "(adj.)", cn: "複雜的"},
-    {en: "Nervously", pos: "(adv.)", cn: "緊張地"},
-    {en: "Gesture", pos: "(n./v.)", cn: "手勢、姿勢"},
-    {en: "Wage", pos: "(n.)", cn: "工資、薪水"},
-    {en: "Cast", pos: "(v./n.)", cn: "投擲、卡司（演員陣容）"},
-    {en: "Aggressive", pos: "(adj.)", cn: "具侵略性的、積極進取的"},
-    {en: "Anxious", pos: "(adj.)", cn: "焦慮的"},
-    {en: "Broadcast", pos: "(v./n.)", cn: "廣播、播送"},
-    {en: "Clumsy", pos: "(adj.)", cn: "笨拙的"},
-    {en: "Damage", pos: "(v./n.)", cn: "損害、傷害"}
+    {en: "account", kk: "[əˈkaʊnt]", pos: "(n.)", cn: "帳戶；描述"}, {en: "afford", kk: "[əˈfɔrd]", pos: "(v.)", cn: "買得起；負擔得起"}, {en: "boast", kk: "[bost]", pos: "(v.)", cn: "誇耀；吹噓"}, {en: "brief", kk: "[brif]", pos: "(adj.)", cn: "簡短的"}, {en: "cast", kk: "[kæst]", pos: "(v.)", cn: "拋；擲"}, {en: "constant", kk: "[ˈkɑnstənt]", pos: "(adj.)", cn: "持續的；恆定的"}, {en: "credit", kk: "[ˈkrɛdɪt]", pos: "(n.)", cn: "信用；功勞"}, {en: "dumb", kk: "[dʌm]", pos: "(adj.)", cn: "愚蠢的"}, {en: "earnest", kk: "[ˈɝnɪst]", pos: "(adj.)", cn: "認真的；誠摯的"}, {en: "gesture", kk: "[ˈdʒɛstʃɚ]", pos: "(v.)", cn: "比手勢"}, {en: "harvest", kk: "[ˈhɑrvɪst]", pos: "(n.)", cn: "收穫；豐收"}, {en: "hint", kk: "[hɪnt]", pos: "(n.)", cn: "暗示"}, {en: "ignorant", kk: "[ˈɪɡnərənt]", pos: "(adj.)", cn: "無知的"}, {en: "leak", kk: "[lik]", pos: "(v.)", cn: "洩漏"}, {en: "lecture", kk: "[ˈlɛktʃɚ]", pos: "(n.)", cn: "講座；演講"}, {en: "litter", kk: "[ˈlɪtɚ]", pos: "(v.)", cn: "亂丟垃圾"}, {en: "mature", kk: "[məˈtʃʊr]", pos: "(adj.)", cn: "成熟的"}, {en: "omit", kk: "[oˈmɪt]", pos: "(v.)", cn: "省略；遺漏"}, {en: "personality", kk: "[ˌpɝsəˈnælɪti]", pos: "(n.)", cn: "人格；個性"}, {en: "pile", kk: "[paɪl]", pos: "(n.)", cn: "一堆"}, {en: "relief", kk: "[rɪˈlif]", pos: "(n.)", cn: "寬慰；鬆了一口氣"}, {en: "suitable", kk: "[ˈsutəbl]", pos: "(adj.)", cn: "適合的"}, {en: "survey", kk: "[ˈsɝve]", pos: "(n.)", cn: "調查"}, {en: "vivid", kk: "[ˈvɪvɪd]", pos: "(adj.)", cn: "生動的"}, {en: "wage", kk: "[wedʒ]", pos: "(n.)", cn: "工資"}, {en: "wisdom", kk: "[ˈwɪzdəm]", pos: "(n.)", cn: "智慧"}, {en: "yell", kk: "[jɛl]", pos: "(v.)", cn: "喊叫"}, {en: "advertiser", kk: "[ˈædvɚˌtaɪzɚ]", pos: "(n.)", cn: "廣告商"}, {en: "amusing", kk: "[əˈmjuzɪŋ]", pos: "(adj.)", cn: "有趣的"}, {en: "analysis", kk: "[əˈnælɪsɪs]", pos: "(n.)", cn: "分析"}, {en: "barrier", kk: "[ˈbæriɚ]", pos: "(n.)", cn: "障礙"}, {en: "election", kk: "[ɪˈlɛkʃən]", pos: "(n.)", cn: "選舉"}, {en: "facility", kk: "[fəˈsɪlɪti]", pos: "(n.)", cn: "設施"}, {en: "fulfill", kk: "[fʊlˈfɪl]", pos: "(v.)", cn: "履行；實現"}, {en: "greedy", kk: "[ˈɡridi]", pos: "(adj.)", cn: "貪婪的"}, {en: "investigate", kk: "[ɪnˈvɛstɪˌɡet]", pos: "(v.)", cn: "調查"}, {en: "monitor", kk: "[ˈmɑnɪtɚ]", pos: "(v.)", cn: "監視；監測"}, {en: "monument", kk: "[ˈmɑnjumənt]", pos: "(n.)", cn: "紀念碑"}, {en: "participant", kk: "[pɑrˈtɪsəpənt]", pos: "(n.)", cn: "參與者"}, {en: "tame", kk: "[tem]", pos: "(adj.)", cn: "馴服的"}, {en: "vain", kk: "[ven]", pos: "(adj.)", cn: "虛榮的；徒勞的"}, {en: "virtual", kk: "[ˈvɝtʃuəl]", pos: "(adj.)", cn: "虛擬的"}, {en: "violate", kk: "[ˈvaɪəˌlet]", pos: "(v.)", cn: "違反；侵犯"}, {en: "manipulation", kk: "[məˌnɪpjuˈleʃən]", pos: "(n.)", cn: "操縱；控制"}, {en: "presidential", kk: "[ˌprɛzɪˈdɛnʃəl]", pos: "(adj.)", cn: "總統的"}, {en: "stingy", kk: "[ˈstɪndʒi]", pos: "(adj.)", cn: "吝嗇的"}, {en: "ultimately", kk: "[ˈʌltəmɪtli]", pos: "(adv.)", cn: "最終；最後"}
 ];
 
-const externalPosPool = {"(n.)":["結構","資源","背景","目標"], "(v.)":["改善","維持","解決","發展"], "(adj.)":["明顯","適當","傳統","合理"], "(adv.)":["顯然","穩定","相當","幾乎"], "(v./n.)":["挑戰","計畫","調整","保護"]};
+const externalPool = ["結構", "資源", "背景", "目標", "價值", "事實", "基礎", "威脅", "優點", "機會", "平衡", "距離", "品質", "法律", "自然", "科學", "社會", "能力", "結果", "歷史", "夢想", "現實", "真相", "責任", "權利", "安全", "能量"];
 
-let activityLogs = [], summaryStats = [], quizList = [], answers = {}, mistakes = [], currentIdx = 0, currentEntry = null;
+let quizList = [], mistakes = [], currentIdx = 0, currentSession = null;
+let masterHistory = JSON.parse(localStorage.getItem('vTrack_History')) || [];
 
-window.onload = function() { document.getElementById('honor-count').innerText = teachersHonorCount; initCover(); };
+window.onload = () => { initCover(); };
 
 function initCover() {
-    const savedAns = localStorage.getItem('vTrack_ans');
-    const startDiv = document.getElementById('start-options');
-    if (savedAns && Object.keys(JSON.parse(savedAns)).length > 0) {
-        const lastIdx = Object.keys(JSON.parse(savedAns)).length;
-        startDiv.innerHTML = `<button onclick="confirmContinue(${lastIdx})" class="nav-btn" style="background:var(--success); height: 80px;">從上次進度開始</button><button onclick="confirmRestart(${lastIdx})" class="nav-btn" style="background:var(--danger); margin-top: 10px; font-size: 18px; height: 60px;">重新開始練習</button>`;
-    } else { startDiv.innerHTML = `<button onclick="startGame()" class="nav-btn" style="background:var(--primary); height: 80px;">進入單字測驗</button>`; }
+    const saved = localStorage.getItem('vTrack_temp');
+    const container = document.getElementById('entry-buttons');
+    if (saved) {
+        const d = JSON.parse(saved);
+        container.innerHTML = `<button onclick="continueS(${Object.keys(d.ans || {}).length})" style="width:100%; height:70px; background:var(--success); color:white; border:none; border-radius:15px; font-size:20px; font-weight:bold; margin-bottom:10px;">繼續上次進度</button><button onclick="reStart()" style="width:100%; height:50px; background:var(--danger); color:white; border:none; border-radius:15px; font-size:16px;">重新洗牌</button>`;
+    } else {
+        container.innerHTML = `<button onclick="startF()" style="width:100%; height:70px; background:var(--primary); color:white; border:none; border-radius:15px; font-size:22px; font-weight:bold;">開始練習</button>`;
+    }
 }
 
-function confirmContinue(l) { if (confirm(`上次進度已完成 ${l} 題，確定要繼續嗎？`)) { loadData(); startGameSession(); } }
-function confirmRestart(l) { if (confirm(`上次進度到第 ${l} 題，確定要重新開始嗎？`)) { localStorage.clear(); startGame(); } }
-function startGame() { quizList = [...vocabData].sort(() => Math.random() - 0.5); answers = {}; mistakes = []; currentIdx = 0; addLog("--- 開始 ---"); startStatsEntry("正式測驗"); startGameSession(); }
-function startGameSession() { document.getElementById('cover-page').classList.add('hidden'); render(); }
-function loadData() { quizList = JSON.parse(localStorage.getItem('vTrack_list')); answers = JSON.parse(localStorage.getItem('vTrack_ans')); mistakes = JSON.parse(localStorage.getItem('vTrack_mistakes') || "[]"); activityLogs = JSON.parse(localStorage.getItem('vTrack_logs') || "[]"); summaryStats = JSON.parse(localStorage.getItem('vTrack_stats') || "[]"); currentIdx = Object.keys(answers).length; startStatsEntry("續作"); }
+function startF() { quizList = [...vocabData].sort(()=>Math.random()-0.5); mistakes=[]; currentIdx=0; sLog("正式測驗"); sUI(); }
+function continueS() { const d=JSON.parse(localStorage.getItem('vTrack_temp')); quizList=d.list; mistakes=d.mistakes||[]; currentIdx=0; sLog("續作"); sUI(); }
+function reStart() { if(confirm("確定重來？歷程會保留。")){ recordEnd(); localStorage.removeItem('vTrack_temp'); startF(); }}
+function sUI() { document.getElementById('cover-page').classList.add('none'); document.getElementById('quiz-page').classList.remove('none'); renderQ(); }
 
-function render() {
-    document.getElementById('quiz-page').classList.remove('hidden'); document.getElementById('review-page').classList.add('hidden');
-    if (currentIdx >= quizList.length) { endStatsEntry(); showReview(); return; }
-    document.getElementById('stat-c').innerText = Object.values(answers).filter(v => v !== 'UNSURE' && v.includes(' ')).length;
-    document.getElementById('stat-w').innerText = mistakes.length;
-    document.getElementById('stat-r').innerText = quizList.length - currentIdx;
-    const q = quizList[currentIdx];
-    document.getElementById('content-area').innerHTML = `<button onclick="speak('${q.en}')" class="speaker">🔊</button><div class="word-text">${q.en}</div><div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;"><div class="btn-flex btn-main" onclick="showOptions()"><span class="main-text">我要作答</span><span class="sub-text">請給答案選項</span></div><div class="btn-flex btn-unsure" onclick="handleUnsure()"><span class="main-text">我不確定</span><span class="sub-text">請放入單字卡</span></div></div>`;
+function renderQ() {
+    if(currentIdx >= quizList.length){ recordEnd(); showR(); return; }
+    const q=quizList[currentIdx];
+    document.getElementById('word-display').innerText=q.en;
+    document.getElementById('kk-display').innerText=q.kk;
+    document.getElementById('stat-c').innerText=currentSession.correct;
+    document.getElementById('stat-w').innerText=currentSession.mistakes;
+    document.getElementById('stat-r').innerText=quizList.length-currentIdx;
+    const grid=document.getElementById('options-grid');
+    grid.classList.add('invisible'); grid.innerHTML="";
+    document.getElementById('action-prompt').classList.remove('none');
+    document.getElementById('action-next').classList.add('none');
 }
 
 function showOptions() {
-    const q = quizList[currentIdx]; const correct = `${q.pos} ${q.cn}`;
-    const pool = externalPosPool[q.pos] || ["(n.) 內容"];
-    const randomFakes = [...pool].sort(() => Math.random() - 0.5).slice(0, 3).map(f => `${q.pos} ${f}`);
-    const finalOptions = [correct, ...randomFakes].sort(() => Math.random() - 0.5);
-    document.getElementById('content-area').innerHTML = `<button onclick="speak('${q.en}')" class="speaker">🔊</button><div class="word-text">${q.en}</div><div class="options-grid">${finalOptions.map(o => `<button class="btn-option" onclick="handlePick('${o}')">${o}</button>`).join('')}</div>`;
+    const q=quizList[currentIdx]; const correct=`${q.pos} ${q.cn}`;
+    let fakes=new Set();
+    while(fakes.size<3){
+        let p=externalPool[Math.floor(Math.random()*externalPool.length)];
+        if(p!==q.cn) fakes.add(`${q.pos} ${p}`);
+    }
+    const final=[correct, ...Array.from(fakes)].sort(()=>Math.random()-0.5);
+    const grid=document.getElementById('options-grid');
+    grid.innerHTML=final.map(o=>`<button class="btn-option" onclick="hPick(this,'${o}','${correct}')">${o}</button>`).join('');
+    grid.classList.remove('invisible');
+    document.getElementById('action-prompt').classList.add('none');
 }
 
-function handlePick(val) {
-    const q = quizList[currentIdx], correct = `${q.pos} ${q.cn}`;
-    answers[currentIdx] = val; const isCorrect = (val === correct);
-    if (!isCorrect) { if(!mistakes.find(m => m.en === q.en)) mistakes.push(q); if(currentEntry) currentEntry.mistakes++; }
-    showResult(q, isCorrect);
+function hPick(btn, val, correct) {
+    const isC=(val===correct); const q=quizList[currentIdx];
+    document.querySelectorAll('.btn-option').forEach(b=>{
+        if(b.innerText===correct) b.classList.add('correct');
+        else if(b.innerText===val && !isC) b.classList.add('wrong');
+        b.disabled=true;
+    });
+    currentSession.totalTried++;
+    if(isC){ currentSession.correct++; document.getElementById('result-hint').innerHTML=`<span style="color:var(--success)">✅ 正確！</span>`; }
+    else { currentSession.mistakes++; if(!mistakes.find(m=>m.en===q.en)) mistakes.push(q); document.getElementById('result-hint').innerHTML=`<span style="color:var(--danger)">❌ 答錯囉</span>`; }
+    document.getElementById('action-next').classList.remove('none');
+    saveT();
 }
 
 function handleUnsure() {
-    const q = quizList[currentIdx]; answers[currentIdx] = "UNSURE";
-    if(!mistakes.find(m => m.en === q.en)) mistakes.push(q);
-    if(currentEntry) currentEntry.mistakes++;
-    showResult(q, false, "已記在筆記");
+    const q=quizList[currentIdx]; currentSession.totalTried++; currentSession.mistakes++;
+    if(!mistakes.find(m=>m.en===q.en)) mistakes.push(q);
+    document.getElementById('action-prompt').classList.add('none');
+    document.getElementById('result-hint').innerHTML=`<span style="color:var(--danger)">記在筆記中</span>`;
+    document.getElementById('action-next').classList.remove('none');
+    showOptions();
+    document.querySelectorAll('.btn-option').forEach(b=>{ if(b.innerText.includes(q.cn)) b.classList.add('correct'); b.disabled=true; });
 }
 
-function showResult(q, isCorrect, msg) {
-    save();
-    document.getElementById('content-area').innerHTML = `
-        <div class="feedback" style="background:${isCorrect?'#f6ffed':'#fff1f0'}; color:${isCorrect?'#389e0d':'#cf1322'}">
-            ${msg || (isCorrect ? '答對了！' : '答錯囉')}<br>
-            <small>正確解答：${q.pos} ${q.cn}</small>
-        </div>
-        <button onclick="currentIdx++; render();" style="width:100%; margin-top:15px; background:#333; color:white; padding:20px; border-radius:15px; font-weight:bold; font-size:26px;">下一題</button>
-    `;
+function nextQuestion() { currentIdx++; renderQ(); }
+
+function showR() {
+    document.getElementById('quiz-page').classList.add('none'); 
+    document.getElementById('review-page').classList.remove('none');
+    const list=document.getElementById('review-list-container');
+    if(mistakes.length===0){ list.innerHTML=`<div style="text-align:center; padding:40px 0;"><h1>🏆</h1><h3>全數精熟！</h3></div>`; }
+    else { list.innerHTML=mistakes.map(m=>`<div class="review-item"><div class="item-left"><b>${m.en}</b><span class="pos">${m.pos}</span><span class="cn">${m.cn}</span></div><button onclick="speak('${m.en}')" class="btn-audio-small">🔊</button></div>`).join(''); }
 }
 
-function showReview() {
-    document.getElementById('quiz-page').classList.add('hidden'); document.getElementById('review-page').classList.remove('hidden');
-    if (mistakes.length === 0) { document.getElementById('review-page').classList.add('hidden'); document.getElementById('done-page').classList.remove('hidden'); }
-    else { startStatsEntry("複習"); document.getElementById('review-list').innerHTML = mistakes.map(m => `<div class="review-card"><div><b>${m.en}</b><br><span style="color:red; font-weight:bold; font-size:24px;">${m.pos} ${m.cn}</span></div><button onclick="speak('${m.en}')" class="speaker" style="font-size: 32px;">🔊</button></div>`).join(''); }
-}
-
-function practiceMistakes() { endStatsEntry(); startStatsEntry("重練"); quizList = [...mistakes].sort(() => Math.random() - 0.5); answers = {}; mistakes = []; currentIdx = 0; save(); render(); }
-function resetAllAction() { if(confirm("確定重來？")) { localStorage.clear(); location.reload(); } }
-function save() { localStorage.setItem('vTrack_list', JSON.stringify(quizList)); localStorage.setItem('vTrack_ans', JSON.stringify(answers)); localStorage.setItem('vTrack_mistakes', JSON.stringify(mistakes)); localStorage.setItem('vTrack_logs', JSON.stringify(activityLogs)); localStorage.setItem('vTrack_stats', JSON.stringify(summaryStats)); }
-function speak(t) { const m = new SpeechSynthesisUtterance(t); m.lang = 'en-US'; window.speechSynthesis.speak(m); }
-function exportCode() { alert("進度碼複製成功"); }
-function importCode() { const c = prompt("代碼"); if(c) { try { const d = JSON.parse(decodeURIComponent(escape(atob(c)))); localStorage.setItem('vTrack_list', JSON.stringify(d.l)); localStorage.setItem('vTrack_ans', JSON.stringify(d.a)); localStorage.setItem('vTrack_mistakes', JSON.stringify(d.m)); location.reload(); } catch(e){} } }
+function sLog(t) { currentSession={date:new Date().toLocaleDateString(), startTime:new Date().toLocaleTimeString(), endTime:"", type:t, mistakes:0, correct:0, totalTried:0}; }
+function recordEnd() { if(currentSession){ currentSession.endTime=new Date().toLocaleTimeString(); masterHistory.push(currentSession); localStorage.setItem('vTrack_History', JSON.stringify(masterHistory)); currentSession=null; }}
+function saveT() { localStorage.setItem('vTrack_temp', JSON.stringify({list:quizList, ans:{}, mistakes:mistakes})); }
+function speak(t) { const m=new SpeechSynthesisUtterance(t); m.lang='en-US'; window.speechSynthesis.speak(m); }
+function speakCurrent() { speak(quizList[currentIdx].en); }
+function copyMistakesText() { navigator.clipboard.writeText(mistakes.map(m=>`${m.en} ${m.pos} ${m.cn}`).join('\n')); alert("文字已複製"); }
+function resetAll() { if(confirm("重刷所有進度？歷程仍會保留。")){ recordEnd(); localStorage.clear(); location.reload(); }}
+function practiceMistakes() { recordEnd(); quizList=[...mistakes].sort(()=>Math.random()-0.5); mistakes=[]; currentIdx=0; sLog("重練"); sUI(); }
 function showLogs() {
-    let h = `<table><tr><th>階段</th><th>錯題</th><th>秒數</th></tr>`;
-    summaryStats.forEach(s => h += `<tr><td>${s.type}</td><td>${s.mistakes}</td><td>${Math.round((s.end-s.start)/1000)}</td></tr>`);
-    document.getElementById('summary-table-area').innerHTML = h + `</table>`;
-    document.getElementById('log-list').innerText = activityLogs.join('\n');
-    document.getElementById('log-modal').style.display = 'block';
+    let h=`<table><tr><th>時間</th><th>型</th><th>正/誤</th></tr>`;
+    masterHistory.forEach(s=>h+=`<tr><td>${s.startTime}</td><td>${s.type}</td><td>${s.correct}/${s.mistakes}</td></tr>`);
+    document.getElementById('log-table-area').innerHTML=h+`</table>`;
+    document.getElementById('log-modal').style.display='block';
 }
-function copyLogs() { navigator.clipboard.writeText(document.getElementById('log-list').innerText); alert("成功"); }
-function addLog(m) { const t = new Date(); activityLogs.push(`[${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}] ${m}`); }
-function startStatsEntry(t) { currentEntry = { type: t, start: new Date().getTime(), mistakes: 0 }; }
-function endStatsEntry() { if(currentEntry) { currentEntry.end = new Date().getTime(); summaryStats.push(currentEntry); currentEntry = null; save(); } }
+function copyLogs() { navigator.clipboard.writeText(masterHistory.map(s=>`${s.date} ${s.startTime} | ${s.type} | 正:${s.correct} 誤:${s.mistakes}`).join('\n')); alert("歷程已複製回傳。"); }
 </script>
 </body>
 </html>
