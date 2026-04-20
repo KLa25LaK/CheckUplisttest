@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>B2L5 考卷單字複習</title>
+    <title>考卷單字練習</title>
     <style>
         :root { 
             --bg: #f2f4f7; --card-bg: #ffffff; 
@@ -43,6 +43,7 @@
         .result-hint { font-size: 24px; font-weight: 900; margin-bottom: 8px; text-align: center; }
         .btn-next { width: 100%; height: 75px; background: #262626; color: white; border: none; border-radius: 15px; font-size: 22px; font-weight: bold; cursor: pointer; }
         
+        /* 筆記頁面滾動修正 */
         #review-page { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
         .review-header { flex: 0 0 auto; padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .review-list { flex: 1 1 auto; padding: 10px; overflow-y: auto; text-align: left; -webkit-overflow-scrolling: touch; }
@@ -62,10 +63,10 @@
 
 <div class="app-container">
     <div id="cover-page" style="padding: 30px 20px; text-align: center;">
-        <h2 style="font-size: 30px; margin: 0;">B2L5</h2>
-        <p style="color: var(--text-sub); font-size: 18px; margin: 5px 0 20px;">考卷單字複習</p>
+        <h2 style="font-size: 32px; margin: 0; font-weight: 800;">考卷單字練習</h2>
+        <p style="color: var(--text-sub); font-size: 16px; margin: 10px 0 30px;">Vocab Practice Session</p>
         <div id="entry-buttons"></div>
-        <button onclick="importCode()" style="margin-top: 15px; background: none; border: 1px solid #ccc; padding: 10px; border-radius: 10px; width: 100%; font-size: 15px; color: #666;">📥 匯入進度碼</button>
+        <button onclick="importCode()" style="margin-top: 20px; background: none; border: 1px solid #ccc; padding: 10px; border-radius: 10px; width: 100%; font-size: 14px; color: #666;">📥 匯入進度碼</button>
     </div>
 
     <div id="quiz-page" class="none" style="flex:1; display:flex; flex-direction:column;">
@@ -119,6 +120,7 @@
 </div>
 
 <script>
+// 單字資料庫 47 題
 const vocabData = [
     {en: "account", kk: "[əˈkaʊnt]", pos: "(n.)", cn: "帳戶；描述"}, {en: "afford", kk: "[əˈfɔrd]", pos: "(v.)", cn: "買得起；負擔得起"}, {en: "boast", kk: "[bost]", pos: "(v.)", cn: "誇耀；吹噓"}, {en: "brief", kk: "[brif]", pos: "(adj.)", cn: "簡短的"}, {en: "cast", kk: "[kæst]", pos: "(v.)", cn: "拋；擲"}, {en: "constant", kk: "[ˈkɑnstənt]", pos: "(adj.)", cn: "持續的；恆定的"}, {en: "credit", kk: "[ˈkrɛdɪt]", pos: "(n.)", cn: "信用；功勞"}, {en: "dumb", kk: "[dʌm]", pos: "(adj.)", cn: "愚蠢的"}, {en: "earnest", kk: "[ˈɝnɪst]", pos: "(adj.)", cn: "認真的；誠摯的"}, {en: "gesture", kk: "[ˈdʒɛstʃɚ]", pos: "(v.)", cn: "比手勢"}, {en: "harvest", kk: "[ˈhɑrvɪst]", pos: "(n.)", cn: "收穫；豐收"}, {en: "hint", kk: "[hɪnt]", pos: "(n.)", cn: "暗示"}, {en: "ignorant", kk: "[ˈɪɡnərənt]", pos: "(adj.)", cn: "無知的"}, {en: "leak", kk: "[lik]", pos: "(v.)", cn: "洩漏"}, {en: "lecture", kk: "[ˈlɛktʃɚ]", pos: "(n.)", cn: "講座；演講"}, {en: "litter", kk: "[ˈlɪtɚ]", pos: "(v.)", cn: "亂丟垃圾"}, {en: "mature", kk: "[məˈtʃʊr]", pos: "(adj.)", cn: "成熟的"}, {en: "omit", kk: "[oˈmɪt]", pos: "(v.)", cn: "省略；遺漏"}, {en: "personality", kk: "[ˌpɝsəˈnælɪti]", pos: "(n.)", cn: "人格；個性"}, {en: "pile", kk: "[paɪl]", pos: "(n.)", cn: "一堆"}, {en: "relief", kk: "[rɪˈlif]", pos: "(n.)", cn: "寬慰；鬆了一口氣"}, {en: "suitable", kk: "[ˈsutəbl]", pos: "(adj.)", cn: "適合的"}, {en: "survey", kk: "[ˈsɝve]", pos: "(n.)", cn: "調查"}, {en: "vivid", kk: "[ˈvɪvɪd]", pos: "(adj.)", cn: "生動的"}, {en: "wage", kk: "[wedʒ]", pos: "(n.)", cn: "工資"}, {en: "wisdom", kk: "[ˈwɪzdəm]", pos: "(n.)", cn: "智慧"}, {en: "yell", kk: "[jɛl]", pos: "(v.)", cn: "喊叫"}, {en: "advertiser", kk: "[ˈædvɚˌtaɪzɚ]", pos: "(n.)", cn: "廣告商"}, {en: "amusing", kk: "[əˈmjuzɪŋ]", pos: "(adj.)", cn: "有趣的"}, {en: "analysis", kk: "[əˈnælɪsɪs]", pos: "(n.)", cn: "分析"}, {en: "barrier", kk: "[ˈbæriɚ]", pos: "(n.)", cn: "障礙"}, {en: "election", kk: "[ɪˈlɛkʃən]", pos: "(n.)", cn: "選舉"}, {en: "facility", kk: "[fəˈsɪlɪti]", pos: "(n.)", cn: "設施"}, {en: "fulfill", kk: "[fʊlˈfɪl]", pos: "(v.)", cn: "履行；實現"}, {en: "greedy", kk: "[ˈɡridi]", pos: "(adj.)", cn: "貪婪的"}, {en: "investigate", kk: "[ɪnˈvɛstɪˌɡet]", pos: "(v.)", cn: "調查"}, {en: "monitor", kk: "[ˈmɑnɪtɚ]", pos: "(v.)", cn: "監視；監測"}, {en: "monument", kk: "[ˈmɑnjumənt]", pos: "(n.)", cn: "紀念碑"}, {en: "participant", kk: "[pɑrˈtɪsəpənt]", pos: "(n.)", cn: "參與者"}, {en: "tame", kk: "[tem]", pos: "(adj.)", cn: "馴服的"}, {en: "vain", kk: "[ven]", pos: "(adj.)", cn: "虛榮的；徒勞的"}, {en: "virtual", kk: "[ˈvɝtʃuəl]", pos: "(adj.)", cn: "虛擬的"}, {en: "violate", kk: "[ˈvaɪəˌlet]", pos: "(v.)", cn: "違反；侵犯"}, {en: "manipulation", kk: "[məˌnɪpjuˈleʃən]", pos: "(n.)", cn: "操縱；控制"}, {en: "presidential", kk: "[ˌprɛzɪˈdɛnʃəl]", pos: "(adj.)", cn: "總統的"}, {en: "stingy", kk: "[ˈstɪndʒi]", pos: "(adj.)", cn: "吝嗇的"}, {en: "ultimately", kk: "[ˈʌltəmɪtli]", pos: "(adv.)", cn: "最終；最後"}
 ];
@@ -145,8 +147,8 @@ function initCover() {
 function startF() { 
     quizList = [...vocabData].sort(()=>Math.random()-0.5); 
     mistakes=[]; currentIdx=0; 
-    sLog("正式測驗"); 
-    saveT(); // 初始即存檔順序
+    sLog("考卷練習"); 
+    saveT();
     sUI(); 
 }
 
@@ -167,8 +169,6 @@ function renderQ() {
     const q=quizList[currentIdx];
     document.getElementById('word-display').innerText=q.en;
     document.getElementById('kk-display').innerText=q.kk;
-    
-    // 重新計算正確數與錯誤數（從Session統計）
     document.getElementById('stat-c').innerText=currentSession.correct;
     document.getElementById('stat-w').innerText=currentSession.mistakes;
     document.getElementById('stat-r').innerText=quizList.length-currentIdx;
@@ -204,7 +204,7 @@ function hPick(btn, val, correct) {
     if(isC){ currentSession.correct++; document.getElementById('result-hint').innerHTML=`<span style="color:var(--success)">✅ 正確！</span>`; }
     else { currentSession.mistakes++; if(!mistakes.find(m=>m.en===q.en)) mistakes.push(q); document.getElementById('result-hint').innerHTML=`<span style="color:var(--danger)">❌ 答錯囉</span>`; }
     document.getElementById('action-next').classList.remove('none');
-    saveT(); // 每一題作答後更新 currentIdx
+    saveT();
 }
 
 function handleUnsure() {
@@ -233,7 +233,7 @@ function saveT() { localStorage.setItem('vTrack_temp', JSON.stringify({list:quiz
 function speak(t) { const m=new SpeechSynthesisUtterance(t); m.lang='en-US'; window.speechSynthesis.speak(m); }
 function speakCurrent() { speak(quizList[currentIdx].en); }
 function copyMistakesText() { navigator.clipboard.writeText(mistakes.map(m=>`${m.en} ${m.pos} ${m.cn}`).join('\n')); alert("文字已複製"); }
-function resetAll() { if(confirm("重刷所有進度？歷程仍會保留。")){ recordEnd(); localStorage.clear(); location.reload(); }}
+function resetAll() { if(confirm("重刷進度？歷程仍會保留。")){ recordEnd(); localStorage.clear(); location.reload(); }}
 function practiceMistakes() { recordEnd(); quizList=[...mistakes].sort(()=>Math.random()-0.5); mistakes=[]; currentIdx=0; sLog("重練"); sUI(); }
 function showLogs() {
     let h=`<table><tr><th>時間</th><th>型</th><th>正/誤</th></tr>`;
